@@ -4,7 +4,7 @@
 /**
  * @param {RuleOrLiteral[]} ps
  */
-function cmd(...ps) {
+function cmd_fn(...ps) {
   return seq("\\", ...ps);
 }
 
@@ -51,11 +51,11 @@ module.exports = grammar({
       choice(
         $.comment,
 
-        $._cmd,
+        $.cmd,
         $._syntax,
       ),
 
-    _cmd: $ => cmd(choice(
+    cmd: $ => cmd_fn(choice(
       $.command,
       seq($._builtin_start, $._builtin),
     )),
@@ -210,10 +210,10 @@ module.exports = grammar({
       field("body", $._node_brace)
     ),
     scope: $ => seq("scope", $._arg),
-    put: $ => seq("put", $._cmd),
-    get: $ => seq("get", $._cmd),
-    default: $ => seq("put?", $._cmd),
-    alloc: $ => seq("alloc", $._cmd),
+    put: $ => seq("put", $.cmd),
+    get: $ => seq("get", $.cmd),
+    default: $ => seq("put?", $.cmd),
+    alloc: $ => seq("alloc", $.cmd),
     // }}}
 
     //-- Object {{{
@@ -229,7 +229,7 @@ module.exports = grammar({
 
     patch: $ => seq(
       "patch",
-      braces(cmd($.qualified_ident)),
+      braces(cmd_fn($.qualified_ident)),
       field("self", optional($._ident_square)),
       braces(field("method", repeat($.method_decl)))
     ),
@@ -274,7 +274,7 @@ module.exports = grammar({
       $.verb,
       $.legacy_verb,
     ),
-    verb: $ => cmd(
+    verb: $ => cmd_fn(
       "verb",
       $.herald_start,
       $.herald_sep,
@@ -283,7 +283,7 @@ module.exports = grammar({
     ),
     herald_sep: _ => "|",
 
-    legacy_verb: $ => cmd("startverb", alias($.legacy_verbatim, $.verbatim), "\\stopverb"),
+    legacy_verb: $ => cmd_fn("startverb", alias($.legacy_verbatim, $.verbatim), "\\stopverb"),
     // }}}
 
     //-- XML {{{
@@ -291,8 +291,8 @@ module.exports = grammar({
       $.xmlns_decl,
       $.xml_tag,
     ),
-    xmlns_decl: $ => cmd("xmlns", ":", field("prefix", $._xml_base_ident), field("xmlns", $._text_brace)),
-    xml_tag: $ => cmd(
+    xmlns_decl: $ => cmd_fn("xmlns", ":", field("prefix", $._xml_base_ident), field("xmlns", $._text_brace)),
+    xml_tag: $ => cmd_fn(
       "<",
       $._xml_qname,
       ">",
@@ -308,7 +308,7 @@ module.exports = grammar({
     // }}}
     // }}}
 
-    _arg: $ => prec(2, choice($._brace, $._cmd, $._syntax)),
+    _arg: $ => prec(2, choice($._brace, $.cmd, $._syntax)),
     _textual_node: $ => choice($.text, $._node),
     _brace: $ => braces(repeat($._textual_node)),
     _text_brace: $ => braces(repeat($.text)),

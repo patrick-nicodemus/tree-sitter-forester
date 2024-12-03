@@ -47,13 +47,14 @@ module.exports = grammar({
     source_file: $ => repeat($._node),
 
     //--- Node
-    _node: $ =>
+      _node: $ =>
+      seq(repeat(/\s/),
       choice(
         $.comment,
 
         $.cmd,
         $._syntax,
-      ),
+      )),
 
     cmd: $ => cmd_fn(choice(
       $.command,

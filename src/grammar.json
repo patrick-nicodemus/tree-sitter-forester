@@ -11,19 +11,31 @@
       }
     },
     "_node": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "comment"
+          "type": "REPEAT",
+          "content": {
+            "type": "PATTERN",
+            "value": "\\s"
+          }
         },
         {
-          "type": "SYMBOL",
-          "name": "cmd"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_syntax"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "comment"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "cmd"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_syntax"
+            }
+          ]
         }
       ]
     },
